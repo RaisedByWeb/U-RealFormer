@@ -6,7 +6,7 @@ TrainingConfig holds training-regime knobs (segmented BPTT, cache dropout,
 self-distillation) that are separate from the model architecture.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 

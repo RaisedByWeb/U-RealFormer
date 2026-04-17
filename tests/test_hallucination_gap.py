@@ -5,15 +5,15 @@ import torch
 import torch.nn as nn
 
 from u_realformer import (
-    RealFormerConfig,
-    TrainingConfig,
-    RealFormerDecoder,
-    DecoderCache,
-    segmented_step,
-    distillation_step,
     CacheDropoutSchedule,
-    set_cache_dropout,
+    DecoderCache,
+    RealFormerConfig,
+    RealFormerDecoder,
+    TrainingConfig,
+    distillation_step,
     pick_split,
+    segmented_step,
+    set_cache_dropout,
 )
 from u_realformer.decoder import CausalAttention
 

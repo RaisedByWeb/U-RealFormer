@@ -26,7 +26,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from .config import RealFormerConfig
-from .triton_kernels import is_triton_available, fused_residual_attention
+from .triton_kernels import fused_residual_attention, is_triton_available
 
 # ── ScoreNorm (FP16-safe) ────────────────────────────────────────────────────
 

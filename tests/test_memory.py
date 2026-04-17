@@ -4,10 +4,10 @@ import pytest
 import torch
 
 from u_realformer import (
-    RealFormerConfig,
-    RealFormerEncoder,
-    RealFormerDecoder,
     LowRankProjector,
+    RealFormerConfig,
+    RealFormerDecoder,
+    RealFormerEncoder,
 )
 
 

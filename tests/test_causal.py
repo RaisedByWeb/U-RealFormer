@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from u_realformer import RealFormerConfig, RealFormerDecoder, DecoderCache
+from u_realformer import DecoderCache, RealFormerConfig, RealFormerDecoder
 
 
 @pytest.fixture

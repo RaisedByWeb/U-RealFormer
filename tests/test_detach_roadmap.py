@@ -5,15 +5,13 @@ import torch
 import torch.nn as nn
 
 from u_realformer import (
-    RealFormerConfig,
-    RealFormerEncoder,
-    RealFormerDecoder,
     GatedResidualAttention,
+    RealFormerConfig,
+    RealFormerDecoder,
+    RealFormerEncoder,
     score_norm,
 )
 from u_realformer.attention import _clip_residual_grad
-from u_realformer.decoder import CausalAttention
-
 
 # ── fixtures ──────────────────────────────────────────────────────────────────
 

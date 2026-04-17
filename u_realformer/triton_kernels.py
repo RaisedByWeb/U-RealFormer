@@ -19,7 +19,6 @@ Falls back gracefully when unavailable — see ``fused_residual_attention()``.
 
 from __future__ import annotations
 
-import math
 from typing import Optional, Tuple
 
 import torch
@@ -154,7 +153,9 @@ if _TRITON_AVAILABLE:
             n_offsets = start_n + tl.arange(0, BLOCK_N)
 
             # Load K tile: (BLOCK_N, D)
-            k_ptrs = K_ptr + k_offset + n_offsets[:, None] * stride_kn + d_offsets[None, :] * stride_kd
+            k_ptrs = (K_ptr + k_offset
+                      + n_offsets[:, None] * stride_kn
+                      + d_offsets[None, :] * stride_kd)
             k_mask = (n_offsets[:, None] < N) & (d_offsets[None, :] < D)
             k_tile = tl.load(k_ptrs, mask=k_mask, other=0.0)
 
@@ -163,18 +164,25 @@ if _TRITON_AVAILABLE:
 
             # Residual injection
             if HAS_RESIDUAL:
-                s_ptrs = S_prev_ptr + s_offset + m_offsets[:, None] * stride_sm + n_offsets[None, :] * stride_sn
+                s_ptrs = (S_prev_ptr + s_offset
+                          + m_offsets[:, None] * stride_sm
+                          + n_offsets[None, :] * stride_sn)
                 s_mask = (m_offsets[:, None] < M) & (n_offsets[None, :] < N)
                 s_tile = tl.load(s_ptrs, mask=s_mask, other=0.0).to(tl.float32)
 
                 mu_vals = tl.load(Mu_ptr + mu_offset + m_offsets, mask=m_offsets < M, other=0.0)
-                rstd_vals = tl.load(Rstd_ptr + rstd_offset + m_offsets, mask=m_offsets < M, other=1.0)
+                rstd_vals = tl.load(
+                    Rstd_ptr + rstd_offset + m_offsets,
+                    mask=m_offsets < M, other=1.0,
+                )
 
                 norm_tile = (s_tile - mu_vals[:, None]) * rstd_vals[:, None]
                 qk += gate_h * (scale_h * norm_tile + shift_h)
 
             # Store s_out (raw scores after injection, for next layer)
-            sout_ptrs = S_out_ptr + s_offset + m_offsets[:, None] * stride_sm + n_offsets[None, :] * stride_sn
+            sout_ptrs = (S_out_ptr + s_offset
+                        + m_offsets[:, None] * stride_sm
+                        + n_offsets[None, :] * stride_sn)
             sout_mask = (m_offsets[:, None] < M) & (n_offsets[None, :] < N)
             tl.store(sout_ptrs, qk.to(S_out_ptr.dtype.element_ty), mask=sout_mask)
 
@@ -196,7 +204,9 @@ if _TRITON_AVAILABLE:
             acc = acc * alpha[:, None]
 
             # Load V tile and accumulate
-            v_ptrs = V_ptr + v_offset + n_offsets[:, None] * stride_vn + d_offsets[None, :] * stride_vd
+            v_ptrs = (V_ptr + v_offset
+                      + n_offsets[:, None] * stride_vn
+                      + d_offsets[None, :] * stride_vd)
             v_mask = (n_offsets[:, None] < N) & (d_offsets[None, :] < D)
             v_tile = tl.load(v_ptrs, mask=v_mask, other=0.0)
             acc += tl.dot(p.to(v_tile.dtype), v_tile)
@@ -207,7 +217,9 @@ if _TRITON_AVAILABLE:
         acc = acc / l_i[:, None]
 
         # Write output
-        out_ptrs = Out_ptr + o_offset + m_offsets[:, None] * stride_om + d_offsets[None, :] * stride_od
+        out_ptrs = (Out_ptr + o_offset
+                    + m_offsets[:, None] * stride_om
+                    + d_offsets[None, :] * stride_od)
         out_mask = (m_offsets[:, None] < M) & (d_offsets[None, :] < D)
         tl.store(out_ptrs, acc.to(Out_ptr.dtype.element_ty), mask=out_mask)
 

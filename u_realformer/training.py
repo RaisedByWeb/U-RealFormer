@@ -13,15 +13,14 @@ cached generation:
 from __future__ import annotations
 
 import random
-from typing import Callable, Optional
+from typing import Callable
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 from .config import TrainingConfig
-from .decoder import RealFormerDecoder, CausalAttention
-
+from .decoder import CausalAttention, RealFormerDecoder
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 

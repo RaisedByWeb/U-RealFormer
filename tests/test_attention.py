@@ -1,11 +1,10 @@
 """Tests for gated residual attention and ScoreNorm."""
 
-import math
 
 import pytest
 import torch
 
-from u_realformer import RealFormerConfig, GatedResidualAttention, score_norm
+from u_realformer import GatedResidualAttention, RealFormerConfig, score_norm
 
 
 @pytest.fixture

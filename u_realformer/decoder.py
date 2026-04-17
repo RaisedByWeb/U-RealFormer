@@ -15,10 +15,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .attention import GatedResidualAttention, score_norm, _clip_residual_grad
-from .triton_kernels import is_triton_available, fused_residual_attention
+from .attention import _clip_residual_grad, score_norm
 from .config import RealFormerConfig
-
+from .triton_kernels import fused_residual_attention, is_triton_available
 
 # ── per-layer KV + score-row cache ────────────────────────────────────────────
 
