@@ -337,6 +337,12 @@ We are especially interested in:
 
 ---
 
+## Author
+
+**Uriel Aharoni** -- Tech entrepreneur and PhD student, Golden Gate University.
+
+---
+
 ## License
 
 Apache 2.0 -- see [LICENSE](LICENSE) for details.
