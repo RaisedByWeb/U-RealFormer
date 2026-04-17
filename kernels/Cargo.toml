@@ -1,0 +1,14 @@
+[package]
+name = "realformer-kernels"
+version = "0.1.0"
+edition = "2021"
+description = "Fused low-rank matmul kernels for RealFormer-Evo"
+license = "Apache-2.0"
+
+[lib]
+name = "realformer_kernels"
+crate-type = ["cdylib"]
+
+[dependencies]
+# PyO3 for Python interop; CUDA bindings will be added in v4.
+# pyo3 = { version = "0.21", features = ["extension-module"] }

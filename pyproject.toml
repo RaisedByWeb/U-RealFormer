@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "realformer-evo"
+version = "0.1.0"
+description = "Persistent relational attention for deep Transformers"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+authors = [
+    {name = "U-RealFormer contributors"},
+]
+keywords = ["transformer", "attention", "residual", "deep-learning", "research"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "torch>=2.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "ruff>=0.4",
+    "pyright>=1.1",
+]
+bench = [
+    "datasets>=2.18",
+    "evaluate>=0.4",
+]
+
+[project.urls]
+Repository = "https://github.com/RaisedByWeb/U-RealFormer"
+Documentation = "https://github.com/RaisedByWeb/U-RealFormer/tree/main/docs"
+
+[tool.setuptools.packages.find]
+include = ["realformer_evo*"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
