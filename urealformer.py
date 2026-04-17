@@ -1,14 +1,21 @@
 """
-realformer.py  —  Causal RealFormer, clean baseline.
+urealformer.py — Standalone baseline (origin manifesto).
 
-S_l = raw_l + sigmoid(alpha) * gamma * score_norm(S_{l-1}.detach())
+This is the original single-file prototype that preceded the full library.
+For the production implementation with beta, residual_layers, FP16-safe
+ScoreNorm, detach toggle, training strategies, and Triton kernels, see:
 
-Three additions over a standard causal transformer:
-  score_norm  — row-wise standardisation (LayerNorm over the kv dim)
-  alpha       — per-head gate, init 0.5
-  gamma       — per-head scale, init 1/sqrt(3)
+    realformer_evo/          # the full library
+    realformer_evo/attention.py   # GatedResidualAttention (encoder)
+    realformer_evo/decoder.py     # CausalAttention (decoder)
 
-Everything else is stock.
+This file is preserved as a self-contained reference and smoke test.
+
+Original formula (v0):
+  S_l = raw_l + sigmoid(alpha) * gamma * score_norm(S_{l-1}.detach())
+
+Current formula (realformer_evo):
+  S_l = raw_l + sigmoid(alpha) * (gamma * score_norm(S_{l-1}) + beta)
 """
 
 import math
