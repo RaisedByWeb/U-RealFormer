@@ -3,7 +3,7 @@
 import pytest
 import torch
 
-from realformer_evo import (
+from u_realformer import (
     RealFormerConfig,
     RealFormerEncoder,
     RealFormerDecoder,

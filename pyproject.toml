@@ -3,7 +3,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "realformer-evo"
+name = "u-realformer"
 version = "0.1.0"
 description = "Persistent relational attention for deep Transformers"
 readme = "README.md"
@@ -41,7 +41,7 @@ Repository = "https://github.com/RaisedByWeb/U-RealFormer"
 Documentation = "https://github.com/RaisedByWeb/U-RealFormer/tree/main/docs"
 
 [tool.setuptools.packages.find]
-include = ["realformer_evo*"]
+include = ["u_realformer*"]
 
 [tool.ruff]
 target-version = "py310"

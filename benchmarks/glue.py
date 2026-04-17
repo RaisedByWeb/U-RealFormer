@@ -13,7 +13,7 @@ import time
 import torch
 import torch.nn as nn
 
-from realformer_evo import RealFormerConfig, RealFormerEncoder
+from u_realformer import RealFormerConfig, RealFormerEncoder
 
 
 class GlueClassifier(nn.Module):

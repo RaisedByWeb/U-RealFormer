@@ -27,7 +27,7 @@ What actually happened.
 - OS:
 - Python version:
 - PyTorch version:
-- `realformer-evo` version:
+- `u-realformer` version:
 - GPU (if applicable):
 
 ## Additional context

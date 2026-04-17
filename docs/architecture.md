@@ -52,7 +52,7 @@ P, Q ∈ ℝ^{T × rank}, reducing cross-layer memory from O(T²) to O(T·rank).
 ## Module map
 
 ```
-realformer_evo/
+u_realformer/
 ├── config.py       RealFormerConfig dataclass
 ├── attention.py    GatedResidualAttention + score_norm
 ├── low_rank.py     LowRankProjector (compress / decompress)

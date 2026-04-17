@@ -17,8 +17,8 @@ import time
 import torch
 import torch.nn.functional as F
 
-from realformer_evo.attention import score_norm
-from realformer_evo.triton_kernels import (
+from u_realformer.attention import score_norm
+from u_realformer.triton_kernels import (
     is_triton_available,
     fused_residual_attention,
     reference_residual_attention,

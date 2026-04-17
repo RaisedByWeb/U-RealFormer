@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Hallucination gap strategies** (`TrainingConfig`, `realformer_evo/training.py`):
+- **Hallucination gap strategies** (`TrainingConfig`, `u_realformer/training.py`):
   - Strategy A: segmented BPTT (`segmented_step`) -- truncated forward with cache handoff
   - Strategy B: stochastic cache dropout (`CacheDropoutSchedule`, `set_cache_dropout`)
   - Strategy C: online self-distillation (`distillation_step`)
@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`residual_layers: set[int]`** -- per-layer control of which layers receive the score residual, replacing the uniform `skip_k` modular arithmetic. `skip_k` remains as a convenience shorthand that auto-generates the set.
 - **Decoupled cross-layer and cross-step residual paths** in `CausalAttention` -- the temporal `s_row` path now fires independently of whether the layer receives cross-layer `s_prev`.
 - **Audit hooks** (`_audit_hook`) on `EncoderLayer` and `DecoderLayer` for instrumenting the real forward path.
-- **Fused Triton kernel** (`realformer_evo/triton_kernels.py`):
+- **Fused Triton kernel** (`u_realformer/triton_kernels.py`):
   - `_score_norm_stats_kernel` -- row-wise mean/rstd precomputation
   - `_fused_residual_attn_fwd` -- tiled QK^T + residual injection + online softmax + V accumulation
   - `FusedResidualAttentionFn` autograd wrapper (Triton forward, PyTorch backward)

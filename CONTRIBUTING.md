@@ -6,8 +6,8 @@ and we value clean, well-tested, well-motivated changes.
 ## Getting started
 
 ```bash
-git clone https://github.com/urielaharoni/realformer-evo.git
-cd realformer-evo
+git clone https://github.com/urielaharoni/U-RealFormer.git
+cd U-RealFormer
 pip install -e ".[dev]"
 pytest tests/ -v
 ```
@@ -35,7 +35,7 @@ We are especially interested in contributions around:
 3. **Write tests.** Every new module needs coverage in `tests/`.
 4. **Run the checks:**
    ```bash
-   ruff check realformer_evo/ tests/
+   ruff check u_realformer/ tests/
    pytest tests/ -v
    ```
 5. **Open a PR** with a clear description of what changed and why.

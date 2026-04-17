@@ -4,15 +4,15 @@ import pytest
 import torch
 import torch.nn as nn
 
-from realformer_evo import (
+from u_realformer import (
     RealFormerConfig,
     RealFormerEncoder,
     RealFormerDecoder,
     GatedResidualAttention,
     score_norm,
 )
-from realformer_evo.attention import _clip_residual_grad
-from realformer_evo.decoder import CausalAttention
+from u_realformer.attention import _clip_residual_grad
+from u_realformer.decoder import CausalAttention
 
 
 # ── fixtures ──────────────────────────────────────────────────────────────────

@@ -4,7 +4,7 @@ import pytest
 import torch
 import torch.nn as nn
 
-from realformer_evo import (
+from u_realformer import (
     RealFormerConfig,
     TrainingConfig,
     RealFormerDecoder,
@@ -15,7 +15,7 @@ from realformer_evo import (
     set_cache_dropout,
     pick_split,
 )
-from realformer_evo.decoder import CausalAttention
+from u_realformer.decoder import CausalAttention
 
 
 @pytest.fixture

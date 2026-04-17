@@ -5,7 +5,7 @@ import math
 import pytest
 import torch
 
-from realformer_evo import RealFormerConfig, GatedResidualAttention, score_norm
+from u_realformer import RealFormerConfig, GatedResidualAttention, score_norm
 
 
 @pytest.fixture

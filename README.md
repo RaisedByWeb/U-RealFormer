@@ -60,7 +60,7 @@ pytest tests/ -v
 ### Encoder (bidirectional)
 
 ```python
-from realformer_evo import RealFormerConfig, RealFormerEncoder
+from u_realformer import RealFormerConfig, RealFormerEncoder
 
 cfg = RealFormerConfig(hidden=768, heads=12, layers=12)
 encoder = RealFormerEncoder(cfg)
@@ -75,7 +75,7 @@ hidden = encoder(ids, attention_mask=mask)   # (1, 128, 768)
 ### Decoder (causal, autoregressive)
 
 ```python
-from realformer_evo import RealFormerConfig, RealFormerDecoder, DecoderCache
+from u_realformer import RealFormerConfig, RealFormerDecoder, DecoderCache
 
 cfg = RealFormerConfig(hidden=768, heads=12, layers=12, vocab_size=32000)
 decoder = RealFormerDecoder(cfg)
@@ -114,7 +114,7 @@ cfg = RealFormerConfig(
 ### Hallucination gap training strategies
 
 ```python
-from realformer_evo import TrainingConfig, segmented_step, CacheDropoutSchedule
+from u_realformer import TrainingConfig, segmented_step, CacheDropoutSchedule
 
 tcfg = TrainingConfig(
     segment_ratio=0.5,       # Strategy A: segmented BPTT
@@ -227,7 +227,7 @@ residual attention preserves cross-layer score similarity 6x better than baselin
 
 ```
 U-RealFormer/
-├── realformer_evo/               # core library
+├── u_realformer/               # core library
 │   ├── __init__.py
 │   ├── attention.py              # GatedResidualAttention + ScoreNorm + grad clip
 │   ├── config.py                 # RealFormerConfig + TrainingConfig

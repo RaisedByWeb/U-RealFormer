@@ -5,16 +5,16 @@ This is the original single-file prototype that preceded the full library.
 For the production implementation with beta, residual_layers, FP16-safe
 ScoreNorm, detach toggle, training strategies, and Triton kernels, see:
 
-    realformer_evo/          # the full library
-    realformer_evo/attention.py   # GatedResidualAttention (encoder)
-    realformer_evo/decoder.py     # CausalAttention (decoder)
+    u_realformer/          # the full library
+    u_realformer/attention.py   # GatedResidualAttention (encoder)
+    u_realformer/decoder.py     # CausalAttention (decoder)
 
 This file is preserved as a self-contained reference and smoke test.
 
 Original formula (v0):
   S_l = raw_l + sigmoid(alpha) * gamma * score_norm(S_{l-1}.detach())
 
-Current formula (realformer_evo):
+Current formula (u_realformer):
   S_l = raw_l + sigmoid(alpha) * (gamma * score_norm(S_{l-1}) + beta)
 """
 

@@ -19,7 +19,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 
-from realformer_evo import (
+from u_realformer import (
     RealFormerConfig,
     TrainingConfig,
     RealFormerDecoder,

@@ -19,8 +19,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from realformer_evo import RealFormerConfig, RealFormerDecoder
-from realformer_evo.attention import score_norm
+from u_realformer import RealFormerConfig, RealFormerDecoder
+from u_realformer.attention import score_norm
 
 
 @dataclass

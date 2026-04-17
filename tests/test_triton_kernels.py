@@ -9,7 +9,7 @@ import math
 import pytest
 import torch
 
-from realformer_evo.triton_kernels import (
+from u_realformer.triton_kernels import (
     is_triton_available,
     reference_residual_attention,
 )
@@ -115,7 +115,7 @@ class TestTritonKernel:
     """Numerical equivalence: Triton kernel vs PyTorch reference."""
 
     def _run_equivalence(self, B, H, T, D, causal, has_residual, dtype):
-        from realformer_evo.triton_kernels import fused_residual_attention
+        from u_realformer.triton_kernels import fused_residual_attention
 
         device = "cuda"
         sm_scale = 1.0 / math.sqrt(D)
@@ -176,7 +176,7 @@ class TestTritonDispatch:
     """Verify that the attention modules dispatch to Triton on CUDA."""
 
     def test_encoder_uses_triton(self):
-        from realformer_evo import RealFormerConfig, RealFormerEncoder
+        from u_realformer import RealFormerConfig, RealFormerEncoder
 
         cfg = RealFormerConfig(
             hidden=64, heads=4, head_dim=16, layers=2,
@@ -191,7 +191,7 @@ class TestTritonDispatch:
         assert not out.isnan().any()
 
     def test_decoder_uses_triton(self):
-        from realformer_evo import RealFormerConfig, RealFormerDecoder
+        from u_realformer import RealFormerConfig, RealFormerDecoder
 
         cfg = RealFormerConfig(
             hidden=64, heads=4, head_dim=16, layers=2,
@@ -218,7 +218,7 @@ class TestFallback:
     def test_fused_raises_without_cuda(self):
         if is_triton_available():
             pytest.skip("CUDA available — fallback not testable")
-        from realformer_evo.triton_kernels import fused_residual_attention
+        from u_realformer.triton_kernels import fused_residual_attention
         with pytest.raises(RuntimeError, match="requires Triton"):
             fused_residual_attention(
                 torch.randn(1, 1, 4, 8), torch.randn(1, 1, 4, 8),

@@ -30,7 +30,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from realformer_evo import RealFormerConfig, RealFormerEncoder
+from u_realformer import RealFormerConfig, RealFormerEncoder
 
 
 @dataclass

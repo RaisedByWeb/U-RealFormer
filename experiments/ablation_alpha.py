@@ -16,7 +16,7 @@ import math
 import torch
 import torch.nn as nn
 
-from realformer_evo import RealFormerConfig, RealFormerEncoder
+from u_realformer import RealFormerConfig, RealFormerEncoder
 
 
 def run_alpha_sweep(alpha_values, args):

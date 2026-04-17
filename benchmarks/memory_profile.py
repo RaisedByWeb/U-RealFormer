@@ -15,7 +15,7 @@ import time
 
 import torch
 
-from realformer_evo import RealFormerConfig, RealFormerEncoder, RealFormerDecoder
+from u_realformer import RealFormerConfig, RealFormerEncoder, RealFormerDecoder
 
 
 def profile_forward(model, input_ids, device, label=""):
