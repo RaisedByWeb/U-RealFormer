@@ -1,6 +1,6 @@
 <p align="center">
   <strong>U-RealFormer</strong><br>
-  <em>Persistent Relational Attention for Deep Transformers</em>
+  <em>Universal RealFormer — Persistent Relational Attention for Deep Transformers</em>
 </p>
 
 <p align="center">
@@ -47,8 +47,10 @@ The original formulation has three practical problems at scale:
 
 ### What U-RealFormer adds
 
-U-RealFormer builds on the original RealFormer idea with three stabilisation
-mechanisms that make residual attention practical for deep (48+ layer) models:
+**U-RealFormer** (Universal RealFormer) is an extension of RealFormer focused on
+making residual attention stable and controllable at scale. It builds on the
+original idea with three stabilisation mechanisms that make residual attention
+practical for deep (48+ layer) models:
 
 ```
 S_l = raw_l + sigmoid(alpha) * (gamma * ScoreNorm(S_{l-1}) + beta)
