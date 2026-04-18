@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import math
 import time
+from contextlib import nullcontext
 from dataclasses import dataclass
 
 import torch
@@ -117,7 +118,11 @@ def evaluate(
         if i >= max_batches:
             break
         ids, labels = ids.to(device), labels.to(device)
-        with torch.amp.autocast("cuda", dtype=torch.float16):
+        amp_ctx = (
+            torch.amp.autocast("cuda", dtype=torch.float16)
+            if device.type == "cuda" else nullcontext()
+        )
+        with amp_ctx:
             logits = model(ids)
         loss = F.cross_entropy(logits.view(-1, logits.size(-1)), labels.view(-1))
         total_loss += loss.item()
@@ -153,7 +158,7 @@ def train_model(
     n_params = sum(p.numel() for p in model.parameters())
     print(f"\n[{name}] Parameters: {n_params:,}")
 
-    if hasattr(torch, "compile") and args.compile:
+    if hasattr(torch, "compile") and args.compile and device.type == "cuda":
         model = torch.compile(model)
         print(f"[{name}] torch.compile enabled")
 
@@ -164,7 +169,8 @@ def train_model(
     scheduler = torch.optim.lr_scheduler.LambdaLR(
         optimizer, lambda s: cosine_with_warmup(s, args.warmup, args.steps),
     )
-    scaler = torch.amp.GradScaler("cuda")
+    use_amp = device.type == "cuda"
+    scaler = torch.amp.GradScaler("cuda") if use_amp else None
 
     results: list[EvalResult] = []
     model.train()
@@ -173,7 +179,6 @@ def train_model(
     tokens_seen = 0
 
     for step in range(1, args.steps + 1):
-        # Get batch (cycle through data)
         try:
             ids, labels = next(train_iter)
         except StopIteration:
@@ -183,19 +188,26 @@ def train_model(
         ids, labels = ids.to(device), labels.to(device)
         tokens_seen += ids.numel()
 
-        # Forward + backward with mixed precision
-        with torch.amp.autocast("cuda", dtype=torch.float16):
+        ctx = torch.amp.autocast("cuda", dtype=torch.float16) if use_amp else nullcontext()
+        with ctx:
             logits = model(ids)
             loss = F.cross_entropy(logits.view(-1, logits.size(-1)), labels.view(-1))
             loss = loss / args.grad_accum
 
-        scaler.scale(loss).backward()
+        if scaler is not None:
+            scaler.scale(loss).backward()
+        else:
+            loss.backward()
 
         if step % args.grad_accum == 0:
-            scaler.unscale_(optimizer)
-            nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
-            scaler.step(optimizer)
-            scaler.update()
+            if scaler is not None:
+                scaler.unscale_(optimizer)
+                nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
+                optimizer.step()
             optimizer.zero_grad()
             scheduler.step()
 
@@ -278,10 +290,16 @@ def main():
     parser.add_argument("--no_compile", action="store_false", dest="compile")
     args = parser.parse_args()
 
-    assert torch.cuda.is_available(), "This benchmark requires a CUDA GPU."
-    device = torch.device("cuda")
-    print(f"Device: {torch.cuda.get_device_name()}")
-    print(f"Memory: {torch.cuda.get_device_properties(0).total_mem / 1024**3:.1f} GB")
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+        print(f"Device: {torch.cuda.get_device_name()}")
+        print(f"Memory: {torch.cuda.get_device_properties(0).total_mem / 1024**3:.1f} GB")
+    elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        device = torch.device("mps")
+        print("Device: Apple MPS")
+    else:
+        device = torch.device("cpu")
+        print("Device: CPU (no GPU detected -- this will be slow)")
 
     # Data
     print("\nLoading and tokenising WikiText-103...")
