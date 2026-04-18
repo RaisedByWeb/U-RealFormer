@@ -255,6 +255,38 @@ residual attention preserves cross-layer score similarity 6x better than baselin
 
 ---
 
+## Practical Impact
+
+U-RealFormer is motivated by a simple inefficiency in deep Transformers:
+models repeatedly recompute relational structure that was already discovered
+in earlier layers.
+
+By preserving and stabilising attention scores across depth, U-RealFormer
+reduces the need for this re-discovery. This has implications in settings
+where relational consistency and long-context reasoning are critical:
+
+### Long-context reasoning
+
+Tasks such as legal analysis, policy interpretation, and technical documentation
+require maintaining relationships across long sequences. Persistent attention
+improves stability of these relationships without relying solely on depth.
+
+### Multi-step decision systems
+
+In structured decision pipelines (e.g. underwriting, claims triage, fraud
+detection), early relational signals influence downstream decisions. Preserving
+attention structure allows later layers to build on prior reasoning instead of
+reconstructing it.
+
+### Training efficiency and depth scaling
+
+Repeated relational discovery increases both compute cost and optimisation
+difficulty. By reusing attention structure, U-RealFormer provides a path toward
+deeper models with more stable gradients and potentially improved compute
+efficiency.
+
+---
+
 ## Repo structure
 
 ```
