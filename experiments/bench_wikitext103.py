@@ -293,7 +293,9 @@ def main():
     if torch.cuda.is_available():
         device = torch.device("cuda")
         print(f"Device: {torch.cuda.get_device_name()}")
-        print(f"Memory: {torch.cuda.get_device_properties(0).total_mem / 1024**3:.1f} GB")
+        props = torch.cuda.get_device_properties(0)
+        mem = getattr(props, "total_memory", None) or getattr(props, "total_mem", 0)
+        print(f"Memory: {mem / 1024**3:.1f} GB")
     elif hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
         device = torch.device("mps")
         print("Device: Apple MPS")
