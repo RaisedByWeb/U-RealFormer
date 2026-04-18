@@ -4,6 +4,7 @@
 </p>
 
 <p align="center">
+  <a href="#background">Background</a> &bull;
   <a href="#installation">Install</a> &bull;
   <a href="#quickstart">Quickstart</a> &bull;
   <a href="#v1-api">v1 API</a> &bull;
@@ -14,29 +15,58 @@
 
 ---
 
-Modern Transformers preserve hidden states across depth -- but they rebuild
-attention structure from scratch at every layer. Deeper layers spend compute
-**rediscovering relational patterns** that earlier layers already identified.
+## Background
 
-U-RealFormer asks a simple question:
+### The original RealFormer
 
-> **What if attention scores were persistent state?**
+[RealFormer](https://arxiv.org/abs/2012.11747) (He et al., Google Research, 2020)
+introduced **residual attention** -- the idea of adding the raw attention scores
+from layer *l-1* directly into layer *l* before softmax:
 
-This library implements **gated residual attention** -- a principled mechanism
-that propagates score-level relational structure across depth, normalised in
-attention space so that historical context *shifts* the distribution rather than
-overwhelming it.
+```
+S_l = raw_l + S_{l-1}
+```
+
+This simple addition showed consistent improvements on GLUE, SQuAD, and
+image classification, demonstrating that **preserving relational structure
+across depth** is a valuable inductive bias. The key insight: attention
+scores carry useful information that should not be discarded between layers.
+
+### Limitations of naive residual attention
+
+The original formulation has three practical problems at scale:
+
+1. **Instability in deep stacks.** Raw score accumulation across many layers
+   causes magnitude drift -- softmax is sensitive to row-wise contrast, not
+   absolute magnitude, so uncalibrated residuals overwhelm current-layer evidence.
+2. **No per-head control.** All heads receive the same residual signal with
+   equal weight. Different heads specialise in different relational types
+   (local syntax vs global context) and need independent control.
+3. **No normalisation.** The residual is injected in raw score space, making
+   it sensitive to the scale of scores at different depths.
+
+### What U-RealFormer adds
+
+U-RealFormer builds on the original RealFormer idea with three stabilisation
+mechanisms that make residual attention practical for deep (48+ layer) models:
 
 ```
 S_l = raw_l + sigmoid(alpha) * (gamma * ScoreNorm(S_{l-1}) + beta)
 ```
 
-| Component     | What it does                                                     |
-| ------------- | ---------------------------------------------------------------- |
-| **alpha** gate | Per-head learned control of residual openness                   |
-| **gamma** scale | Per-head contrast of the normalised residual                   |
-| **beta** shift | Per-head bias in cross-layer score flow (softmax-invariant)     |
-| **ScoreNorm** | Row-wise standardisation in attention space (FP16-safe)          |
+| Component     | What it does                                                     | Why it matters                        |
+| ------------- | ---------------------------------------------------------------- | ------------------------------------- |
+| **ScoreNorm** | Row-wise standardisation in attention space (FP16-safe)          | Prevents magnitude drift across depth |
+| **alpha** gate | Per-head learned control of residual openness                   | Heads choose their own relational half-life |
+| **gamma** scale | Per-head contrast of the normalised residual                   | Calibrates signal strength per head   |
+| **beta** shift | Per-head bias in cross-layer score flow                         | Completes the learnable affine transform |
+
+Additionally, this library provides:
+- A **Phase 1 / Phase 2 detach toggle** for controlling gradient flow through the residual path
+- **Per-layer residual control** (`residual_layers`) instead of uniform stride
+- **Hallucination gap strategies** (segmented BPTT, cache dropout, self-distillation) for decoder training
+- A **fused Triton kernel** for inference
+- Empirical evidence: stable gradients at 48 layers, and lower loss than baseline on WikiText-2
 
 ---
 
@@ -312,11 +342,11 @@ implemented; backward kernel and production benchmarks are next.
 ## The thesis
 
 The original Transformer showed that attention could replace recurrence.
+[RealFormer](https://arxiv.org/abs/2012.11747) showed that attention scores
+carry useful structure worth preserving across depth.
 
-The next question is whether attention itself should remain **memoryless
-across depth**.
-
-U-RealFormer starts from a simple belief:
+U-RealFormer takes that insight and asks: **how do we make it stable, controllable,
+and practical at scale?**
 
 > **Deep attention should not have to rediscover the same relational
 > structure over and over again.**
@@ -334,6 +364,19 @@ We are especially interested in:
 - Decoder-safe persistent score state
 - Efficient fused kernels (Triton / CUDA)
 - Benchmark and ablation design
+
+---
+
+## References
+
+- **RealFormer:** He, P., Liu, X., Gao, J., & Chen, W. (2020).
+  *RealFormer: Transformer Likes Residual Attention.*
+  [arXiv:2012.11747](https://arxiv.org/abs/2012.11747) -- The original
+  paper that proposed residual attention across Transformer layers.
+
+- **Attention Is All You Need:** Vaswani, A., et al. (2017).
+  [arXiv:1706.03762](https://arxiv.org/abs/1706.03762) -- The Transformer
+  architecture that U-RealFormer extends.
 
 ---
 
