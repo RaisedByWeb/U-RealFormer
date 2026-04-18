@@ -4,6 +4,13 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/RaisedByWeb/U-RealFormer/actions"><img src="https://github.com/RaisedByWeb/U-RealFormer/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
+  <img src="https://img.shields.io/badge/python-%3E%3D3.10-brightgreen.svg" alt="Python">
+  <img src="https://img.shields.io/badge/status-research%20alpha-orange.svg" alt="Status">
+</p>
+
+<p align="center">
   <a href="#background">Background</a> &bull;
   <a href="#installation">Install</a> &bull;
   <a href="#quickstart">Quickstart</a> &bull;
@@ -12,6 +19,12 @@
   <a href="#repo-structure">Repo structure</a> &bull;
   <a href="#contributing">Contributing</a>
 </p>
+
+> **Project status: Research-grade alpha.**
+> U-RealFormer is an experimental library for studying persistent residual
+> attention in deep Transformers. The core mechanism is implemented, tested
+> (85 tests), and backed by initial experiments. The API may change as
+> benchmarks and ablations evolve. There is no pretrained checkpoint yet.
 
 ---
 
@@ -84,6 +97,11 @@ pytest tests/ -v
 ```
 
 **Requirements:** Python >= 3.10, PyTorch >= 2.1
+
+After installation, you should be able to run the encoder/decoder quickstart,
+the full CPU test suite (`pytest tests/ -v` -- 75 tests pass, 10 GPU-only
+tests are skipped), and the Jacobian Audit (`python experiments/jacobian_audit.py`)
+without additional setup.
 
 ---
 
@@ -253,6 +271,29 @@ Both models solve the task perfectly (loss -> 0). The structural diagnostic show
 residual attention preserves cross-layer score similarity 6x better than baseline
 (cosine 0.655 vs 0.109).
 
+### Reproducing these results
+
+All results above were produced on CPU (Apple M-series, no GPU). Commands
+to reproduce:
+
+```bash
+# Jacobian Audit (12/24/48 layers, ~1-2 sec each)
+python experiments/jacobian_audit.py --layers 12
+python experiments/jacobian_audit.py --layers 24
+python experiments/jacobian_audit.py --layers 48
+
+# WikiText-2 character-level LM (~15 min per model on CPU)
+pip install datasets
+python experiments/bench_wikitext.py --steps 5000 --eval_every 500
+
+# Copy-shift synthetic task (~8 min per model on CPU)
+python experiments/bench_structured.py --steps 5000 --eval_every 500
+```
+
+All experiments use `torch.manual_seed(42)` for reproducibility. Expected
+outputs should match the tables above within normal floating-point variance.
+The WikiText-2 benchmark downloads the dataset automatically on first run.
+
 ---
 
 ## Practical Impact
@@ -370,6 +411,15 @@ The hallucination gap infrastructure is built; needs GPU-scale training.
 
 Fuse core operations into efficient kernels. The Triton forward kernel is
 implemented; backward kernel and production benchmarks are next.
+
+### Current limitations
+
+- Results are early and limited in scale (6L/256H, 5000 steps, CPU training).
+- No large-scale pretrained checkpoint exists yet.
+- No published benchmark suite beyond the experiments in this repo.
+- The Triton kernel covers forward-pass inference only; backward is PyTorch fallback.
+- The hallucination gap strategies are implemented but not yet validated at GPU scale.
+- API may change as ablations reveal better defaults or parameter structures.
 
 ---
 

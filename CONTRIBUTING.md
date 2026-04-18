@@ -1,4 +1,4 @@
-# Contributing to RealFormer-Evo
+# Contributing to U-RealFormer
 
 Thank you for your interest in contributing! This project is research-grade
 and we value clean, well-tested, well-motivated changes.
@@ -6,7 +6,7 @@ and we value clean, well-tested, well-motivated changes.
 ## Getting started
 
 ```bash
-git clone https://github.com/urielaharoni/U-RealFormer.git
+git clone https://github.com/RaisedByWeb/U-RealFormer.git
 cd U-RealFormer
 pip install -e ".[dev]"
 pytest tests/ -v
