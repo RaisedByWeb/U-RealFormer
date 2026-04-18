@@ -34,6 +34,7 @@ dev = [
 bench = [
     "datasets>=2.18",
     "evaluate>=0.4",
+    "tiktoken>=0.7",
 ]
 
 [project.urls]
